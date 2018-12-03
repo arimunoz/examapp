@@ -1,0 +1,43 @@
+<div class="jumbotron">
+<% if user_signed_in? %>
+    <h1>Welcome to our Academic Database Application</h1>
+    <p class="lead">
+      You have signed in!  Please read our news!
+    </p>
+     <p class="lead">
+      <h3> News: We are having a meeting soon. Please check your email for any updates on location and time. </h3>
+    </p>
+    <p class="lead">
+      As you can see; make sure you are added to out faculties list. If you are not added please send an email to our admin personal at adminHelp@gmail.com.
+      Thank you for your patience as we update the system. <%= link_to 'Faculties Page', faculties_path %>
+    </p>
+    <h5> Faculties</h5> 
+    <p class="lead">Please enter your grades for your students. Again, if you are not a faculty please send an email to our admin personal at adminHelp@gmail.com.
+    You will not be able to save your student if you are not in our database. Thank you. <%= link_to 'Enrollments', enrollments_path %>  </p>
+    <h5> Programs</h5>
+    <p class="lead">Please view your program. If you do not see it please send an email to our admin personal at adminHelp@gmail.com.
+     Thank you. <%= link_to 'Programs', programs_path %>  </p>
+     <h5>Courses</h5>
+     <p class="lead">Please view your course. If you do not see it please send an email to our admin personal at adminHelp@gmail.com.
+     Thank you. <%= link_to 'Courses', courses_path %>  </p>
+     <h5> Links to Pages Here: </h5>
+    <%= link_to 'Faculties', faculties_path %>
+    <%= link_to 'Enrollments', enrollments_path %>
+    <%= link_to 'Programs', programs_path %>
+    <%= link_to 'Courses', courses_path %>
+    <%= link_to "Sign Out", destroy_user_session_path, :method => :delete %>
+  <% else %>
+    <h1>Welcome, new user!</h1>
+    <p class="lead">
+      You must sign in or sign up before you can access our super sweet,
+      top secret content.
+    </p>
+    <div class="row-fluid">
+      <div class="span6">
+        <%= link_to "Sign In", new_user_session_path, :class => "btn btn-success" %>
+      </div>
+      <div class="span6">
+        <%= link_to "Sign Up", new_user_registration_path, :class => "btn btn-success" %>
+      </div>
+    </div>
+  <% end %>
