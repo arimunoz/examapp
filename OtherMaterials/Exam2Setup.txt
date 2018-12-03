@@ -1,0 +1,192 @@
+List of Commands--
+Areli Munoz
+---------------------
+1. Make a directory:
+---------------------
+mkdir exam_app
+
+Change to directory:
+-------------------------------------
+
+cd exam_app
+
+Create the new examapp by entering:
+---------------------------------------
+
+rails new examapp -d mysql
+
+Change to your working directory like so:
+-----------------------------------------
+
+cd examapp
+
+open config/database.yml
+--------------------------------------
+2. Configure the application to know where your database is located and the login credentials for it.  -- 
+--------------------------------------
+
+Copy the name of the database: examapp_development
+ 
+
+examapp> mysql -u root -p
+password: ********
+
+3. Create a database on the MySQL server to hold your data.
+=============-------------------------================
+
+mysql> CREATE DATABASE examapp_development;
+
+
+4. Time to run scaffold by entering the following commands:
+--------------------------------------------------------
+rails g scaffold Faculty last_name:string first_name:string hire_date:date
+
+rails g scaffold Student last_name:string first_name:string street:string city:string state:string zip:string phone_number:string dob:date age:integer enrollment_date:date
+
+rails g scaffold Program name:string budget:float start_date:date faculty_id:integer 
+
+rails g scaffold Course number:integer title:string credits:integer description:text program_id:integer
+
+rails g scaffold Enrollment grade:string student_id:integer course_id:integer
+
+---------------------------------------------------------------------------------
+Scaffold a home and about page, to be routed through a single ‘Pages’ controller 
+like so:
+---------------------------------------------------------------------------------
+
+rails g controller Pages home about
+
+----------------------------------------------------------------------
+
+NOW ITS TIME TO MIGRATE Like so:
+--------------------------------
+
+rake db:migrate
+
+--------------------------------
+
+Add associations to the model files. Open in app/models/course.rb :
+
+class Course < ApplicationRecord
+
+	belongs_to      :programs
+
+	has_many	:enrollments
+end
+
+
+Open in app/models/programs.rb :
+
+class Programs < ApplicationRecord
+
+	belongs_to	:faculties, :optional => true
+
+	has_many	:courses
+end
+
+FILE PROVED TO ADD DATA
+---------------------
+
+Use seeds.rb to load some data using the above edited models:
+
+Open db/seeds.rb and enter the following data:
+
+Faculty.create!(last_name: 'Neet', first_name: 'Mary', hire_date: Date.new(1998,1,15))
+
+Student.create!(last_name: 'Boy', first_name: 'Dann', street: '78654', city: 'Chicago', state: 'IL', zip: '09753', phone_number: '708-345-2834', dob: Date.new(1998,2,20), age: 33, enrollment_date: Date.new(2000,4,12), )
+
+Program.create!(name: 'AU NightCoders', budget: 1250, start_date: Date.new(2002,1,1), faculty_id: Faculty.last.id)
+
+Course.create!(number: 5454, title: 'Code Jam', credits: 3, description: 'Place where you code and jam!' , program_id: Program.last.id)
+
+Enrollment.create!(grade: 'A', student_id: Student.last.id, course_id: Course.last.id)
+-------------------------------------------------------------------------------------------
+
+SAVE the changes to the seeds.rb file. :
+---------------------------------------------------------------------
+
+rake db:seed
+
+EDIT config/routes.rb to add a 'root route' that will show the courses offered like so:
+
+Rails.application.routes.draw do
+  root 'pages#home'
+
+  get 'pages/home'
+
+  get 'pages/about'
+
+end
+------next add admin----
+==================APPLICATION DASHBOARD================================
+In your gemfile:
+
+gem 'rails_admin', '~> 1.2'
+
+Run bundle install 
+
+Run rails g rails_admin:install
+
+Provide a namespace for the routes when asked
+
+Start a server rails server and administer your data at /admin. (If you chose default namespace: /admin)
+
+--------------------------------
+
+Include twitter-bootstrap by running bootstraps scripts like so:
+----------------------------------------------------------------
+Edit the Gemfile with 'gem 'twitter-bootstrap-rails'
+
+Run bundle install
+
+rails generate bootstrap:install
+
+LOGIN:::AUTHENTICATION
+----------------------
+We need restrict our app/system to authorized users, our system must have an authentication mechanizm. 
+
+I choose to use devise; its a simple but complete authentication system.
+
+
+Step1. Create the Model of the system administrator, by running the following commands:
+
+rails g model User
+
+Step2. Edit the Gemfile by adding "gem 'devise'"
+
+Step3. Run bundle install 
+
+Step4. Install Devise like so:
+
+rails generate devise:install
+-----
+You can copy Devise views (for customization) to your app by running:
+
+       rails g devise:views
+
+Step5. Create the devise fields and add the options to the Model User, like so:
+
+rails generate devise User
+
+Step6. Next you need to migrate by running:
+
+rake db:migrate
+
+Step7. Edit the file “config/initializers/rails_admin.rb”, there you will be able to edit your 
+management system in the future, but for now look for the following patch of commented 
+code and “uncomment” it:
+
+code config/initializers/rails_admin.rb
+
+## == Devise ==
+# config.authenticate_with do
+# warden.authenticate! scope: :user
+# end
+# config.current_user_method(&:current_user)
+
+## Like so == Devise ==
+config.authenticate_with do
+warden.authenticate! scope: :user
+end
+config.current_user_method(&:current_user)
+
